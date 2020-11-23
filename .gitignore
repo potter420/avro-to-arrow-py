@@ -1,0 +1,8 @@
+.ipynb_checkpoints/**
+notebook/**
+build/**
+dist/**
+avro_to_arrow.egg-info**
+**pycache**
+**.html
+**dask-worker-space**
