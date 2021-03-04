@@ -208,7 +208,7 @@ cdef void append_records(
                     (<CDoubleBuilder*>builder_c[_i_f]).Append(read_double(stream))
                 elif type_[_i_f] == Type._Type_BOOL:
                     (<CBooleanBuilder*>builder_c[_i_f]).Append(read_boolean(stream))
-                elif type_[_i_f] == Type._Type_DECIMAL:
+                elif type_[_i_f] == Type._Type_DECIMAL128:
                     (<CDecimal128Builder*>builder_c[_i_f]).AppendDecimal(read_decimal(stream))
                 elif type_[_i_f] == Type._Type_DATE32:
                     (<CDate32Builder*>builder_c[_i_f]).Append(<int32_t>read_long(stream))
@@ -246,7 +246,7 @@ cdef void unsafe_append_records(
                     (<CDoubleBuilder*>builder_c[_i_f]).UnsafeAppend(read_double(stream))
                 elif type_[_i_f] == Type._Type_BOOL:
                     (<CBooleanBuilder*>builder_c[_i_f]).UnsafeAppend(read_boolean(stream))
-                elif type_[_i_f] == Type._Type_DECIMAL:
+                elif type_[_i_f] == Type._Type_DECIMAL128:
                     (<CDecimal128Builder*>builder_c[_i_f]).UnsafeAppendDecimal(read_decimal(stream))
                 elif type_[_i_f] == Type._Type_DATE32:
                     (<CDate32Builder*>builder_c[_i_f]).UnsafeAppend(<int32_t>read_long(stream))
@@ -283,7 +283,7 @@ cdef shared_ptr[CTable] read_record(
             builder_c.push_back(new CDoubleBuilder(defl_mem_pool))
         elif type_[_i_f] == Type._Type_BOOL:
             builder_c.push_back(new CBooleanBuilder(defl_mem_pool))
-        elif type_[_i_f] == Type._Type_DECIMAL:
+        elif type_[_i_f] == Type._Type_DECIMAL128:
             builder_c.push_back(new CDecimal128Builder(schema.get().field(_i_f).get().type(), defl_mem_pool))
         elif type_[_i_f] == Type._Type_DATE32:
             builder_c.push_back(new CDate32Builder(defl_mem_pool))
@@ -464,3 +464,15 @@ def read_avro_buf(f, size, Safe=True):
     free(magic_bytes)
     free(sync_marker)
     return pyarrow_wrap_table(results)
+
+
+def test(n):
+    cdef CMemoryPool* defl_mem_pool = c_default_memory_pool()
+    cdef CStringBuilder* stringArrBuilder = new CStringBuilder(defl_mem_pool)
+    cdef c_string t = b""
+    cdef shared_ptr[CArray] arr
+    for i in range(n):
+        t = b"a"
+        stringArrBuilder.Append(t)
+    stringArrBuilder.Finish(&arr)
+    return pyarrow_wrap_array(arr)
