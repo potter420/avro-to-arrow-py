@@ -3,7 +3,7 @@ import os
 import pyarrow as pa
 import numpy as np
 
-USE_CYTHON = True
+USE_CYTHON = False
 ext_modules = [
     Extension(
         "avro_to_arrow._reader",
